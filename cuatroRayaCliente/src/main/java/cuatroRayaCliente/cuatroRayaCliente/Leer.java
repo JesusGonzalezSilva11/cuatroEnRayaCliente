@@ -76,17 +76,4 @@ public class Leer {
 		lista=cadena.split("_");
 		return lista;
 	}
-	 
-	String[] replay() {
-			String[] lista=null;
-			var entrada = new DataInputStream(streamEntrada);
-			String cadena="";
-			try {
-				cadena=entrada.readUTF();
-			} catch (IOException e) {
-				System.out.println("Se callo el servidor");
-			}
-			lista=cadena.split("&");
-			return lista;
-	}
 }

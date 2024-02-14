@@ -68,62 +68,6 @@ public class CreaVentanas {
             }
         });
         menuBar.add(btnRendirse);
-        
-        JPanel contenedor = new JPanel();
-        fondo.add(contenedor);
-        contenedor.setLayout(new BoxLayout(contenedor, BoxLayout.X_AXIS));
-
-        Component horizontalStrut = Box.createHorizontalStrut((int) (frame.getWidth() * 0.05));
-        contenedor.add(horizontalStrut);
-//------------------------------------------------Tablero
-        JPanel tableroPanel = new JPanel();
-        tableroPanel.setLayout(new GridLayout(1, tamaño)); // Grid horizontal
-        JPanel[][]matrizPaneles = new JPanel[tamaño][tamaño];
-        crearTablero(tableroPanel,matrizPaneles,tamaño);
-        contenedor.add(tableroPanel);
-//------------------------------------------------
-        Component horizontalStrut_1 = Box.createHorizontalStrut(22);
-        contenedor.add(horizontalStrut_1);
-    }
-
-    private void crearTablero(JPanel tablero,JPanel[][]matrizPaneles,int tamaño) {
-        for (int i = 0; i < tamaño; i++) {
-            JPanel columna = new JPanel();
-            columna.setLayout(new GridLayout(tamaño, 1)); // Grid vertical
-            for (int j = 0; j < tamaño; j++) {
-                JPanel panel = new JPanel();
-                panel.setBackground(Color.WHITE); // Panel blanco por defecto
-                panel.addMouseListener(new PanelClickListener(i, j));
-                matrizPaneles[i][j] = panel;
-                columna.add(panel);
-            }
-            tablero.add(columna);
-        }
-    }
-
-    // Clase interna para manejar clics en los paneles
-    public class PanelClickListener extends MouseAdapter {
-        private int columna;
-        private int fila;
-
-        public PanelClickListener(int columna, int fila) {
-            this.columna = columna;
-            this.fila = fila;
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            cambiarColorPanel();
-        }
-
-        private void cambiarColorPanel() {
-            for (int i = tamaño - 1; i >= 0; i--) {
-//                if (matrizPaneles[columna][i].getBackground().equals(Color.WHITE)) {//Si ve que esta blanco le pide al server que coloque
-///*cambia esta linea merluzo*/	matrizPaneles[columna][i].setBackground(Color.RED); // Pedira al server un true o false si le regresa true cambia
-//                    break;
-//                }
-            }
-        }
 
     }
 }

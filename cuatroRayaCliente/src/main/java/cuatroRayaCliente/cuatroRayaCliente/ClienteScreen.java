@@ -452,7 +452,7 @@ public class ClienteScreen {
 	private void updateUsuariosPanel(List<String> usuarios, JPanel usuariosPanel) {
 	    usuariosPanel.removeAll();
 
-	    if (!usuarios.isEmpty() && !usuarios.get(0).equals("null")) {
+	    if (!usuarios.isEmpty() && !usuarios.get(0).equals("")) {
 	        for (String user : usuarios) {
 	            JPanel panel = new JPanel();
 
@@ -520,7 +520,6 @@ public class ClienteScreen {
 	    JPanel tableroPanel = new JPanel();
 	    tableroPanel.setLayout(new GridLayout(1, tamaño)); // Grid horizontal
 	    JPanel[][] matrizPaneles = new JPanel[tamaño][tamaño];
-	    System.out.println("El tamaño de la matriz es: "+matrizPaneles.length);
 	    contenedor.add(tableroPanel);
 	//------------------------------------------------
 	    Component horizontalStrut_1 = Box.createHorizontalStrut(22);
@@ -540,87 +539,140 @@ public class ClienteScreen {
 	}
 
 	private void updateTablero(JPanel tablero, JPanel[][] matrizPaneles) {
-	    escribe.refrescarPartida();
-	    String[] turnos = lee.cadenas(); // usuario&columna&fila
-	    matrizPaneles = new JPanel[tamaño][tamaño];
-	    // Limpiar el tablero antes de actualizarlo
-	    tablero.removeAll();
-
-	    for (int i = 0; i < tamaño; i++) {
-	        JPanel columna = new JPanel();
-	        columna.setLayout(new GridLayout(tamaño, 1)); // Grid vertical
-	        for (int j = 0; j < tamaño; j++) {
-	            JPanel panel = new JPanel();
-	            panel.setBackground(Color.WHITE); // Panel blanco por defecto
-	            panel.addMouseListener(new PanelClickListener(i, j, matrizPaneles, tamaño));
-	            matrizPaneles[i][j] = panel;
-	            panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
-	            columna.add(panel);
-	        }
-	        tablero.add(columna);
-	    }
-
-	    // Si hay turnos, actualizar el tablero con las jugadas
-	    if (!turnos[0].equals("null")) {
-	        for (String jugada : turnos) {
-	            String[] infoJugada = jugada.split("&");
-	            int columna = Integer.parseInt(infoJugada[1]);
-	            int fila = Integer.parseInt(infoJugada[2]);
-	            String jugador = infoJugada[0];
-
-	            // Actualizar el estado de la casilla en el tablero
-	            JPanel panel = new JPanel();
-	            if (jugador.equals(this.user)) {
-	                panel.setBackground(Color.RED);
-	            } else {
-	                panel.setBackground(Color.YELLOW);
-	            }
-	            panel.addMouseListener(new PanelClickListener(fila, columna, matrizPaneles, tamaño));
-	            matrizPaneles[fila][columna] = panel;
-	        }
-	    }
-
-	    // Volver a validar y repintar el contenedor
-	    tablero.revalidate();
-	    tablero.repaint();
+		escribe.isTerminada();
+		if(lee.confirma()) {
+			ventanas.show(cardPanel, "historial");
+			System.out.println("Ya ganaron");
+		}else {
+			escribe.refrescarPartida();
+		    String[] turnos = lee.cadenas(); // usuario&columna&fila
+	
+		    matrizPaneles=new JPanel[tamaño][tamaño];//declarar la matriz solo por los colores
+		    if (!turnos[0].equals("null")) {
+		    	turnos[0] = turnos[0].replaceAll("null", "");
+		        System.out.println("Turnos: " + Arrays.toString(turnos));
+		        
+		    	for (int i = 0; i < tamaño; i++) {
+		            for (int j = 0; j < tamaño; j++) {
+		                JPanel panel = new JPanel();
+		                panel.setBackground(Color.WHITE); // Panel blanco por defecto
+		                for (String jugada : turnos) {
+		                    String[] infoJugada = jugada.split("&");
+		                    int columnaJugada = Integer.parseInt(infoJugada[1]);
+		                    int filaJugada = Integer.parseInt(infoJugada[2]);
+		                    String jugador = infoJugada[0];
+		                    if (filaJugada == j && columnaJugada == i) {
+		                        if (jugador.equals(this.user)) {
+		                            panel.setBackground(Color.RED);
+		                        } else {
+		                            panel.setBackground(Color.YELLOW);
+		                        }
+		                    }
+		                }
+		                matrizPaneles[i][j]=panel;
+		            }
+		    	}
+		    }else {
+		    	for (int i = 0; i < tamaño; i++) {
+		            for (int j = 0; j < tamaño; j++) {
+		                JPanel panel = new JPanel();
+		                panel.setBackground(Color.WHITE); // Panel blanco por defecto
+		                
+		                matrizPaneles[i][j]=panel;
+		            }
+		    	}
+		    }
+		    
+		    // Limpiar el tablero antes de actualizarlo
+		    tablero.removeAll();
+	
+		    // Si hay turnos, actualizar el tablero con las jugadas
+		    if (!turnos[0].equals("null")) {
+		        turnos[0] = turnos[0].replaceAll("null", "");
+	
+		        for (int i = 0; i < tamaño; i++) {
+		            JPanel columna = new JPanel();
+		            columna.setLayout(new GridLayout(tamaño, 1)); // Grid vertical
+		            for (int j = 0; j < tamaño; j++) {
+		                JPanel panel = new JPanel();
+		                panel.setBackground(Color.WHITE); // Panel blanco por defecto
+		                for (String jugada : turnos) {
+		                    String[] infoJugada = jugada.split("&");
+		                    int columnaJugada = Integer.parseInt(infoJugada[1]);
+		                    int filaJugada = Integer.parseInt(infoJugada[2]);
+		                    String jugador = infoJugada[0];
+		                    if (filaJugada == j && columnaJugada == i) {
+		                        if (jugador.equals(this.user)) {
+		                            panel.setBackground(Color.RED);
+		                        } else {
+		                            panel.setBackground(Color.YELLOW);
+		                        }
+		                    }
+		                }
+		                panel.addMouseListener(new PanelClickListener(i, j, matrizPaneles, tamaño));
+		                panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+	
+		                columna.add(panel);
+		            }
+		            tablero.add(columna);
+		        }
+		    } else {
+		        for (int i = 0; i < tamaño; i++) {
+		            JPanel columna = new JPanel();
+		            columna.setLayout(new GridLayout(tamaño, 1)); // Grid vertical
+		            for (int j = 0; j < tamaño; j++) {
+		                JPanel panel = new JPanel();
+		                panel.setBackground(Color.WHITE); // Panel blanco por defecto
+		                panel.addMouseListener(new PanelClickListener(i, j, matrizPaneles, tamaño));
+		                panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+	
+		                columna.add(panel);
+		            }
+		            tablero.add(columna);
+		        }
+		    }
+	
+		    // Volver a validar y repintar el contenedor
+		    tablero.revalidate();
+		    tablero.repaint();
+		}
+		    
 	}
 
-    // Clase interna para manejar clics en los paneles
-    private class PanelClickListener extends MouseAdapter {
-        private int columna;
-        private int fila;
-        private JPanel[][]matrizPaneles;
-        private int tamaño;
+	// Clase interna para manejar clics en los paneles
+	private class PanelClickListener extends MouseAdapter {
+	    private int columna;
+	    private int fila;
+	    private JPanel[][] matrizPaneles;
+	    private int tamaño;
 
-        public PanelClickListener(int columna, int fila, JPanel[][]matrizPaneles, int tamaño) {
-            this.columna = columna;
-            this.fila = fila;
-            this.matrizPaneles=matrizPaneles;
-            this.tamaño=tamaño;
-        }
+	    public PanelClickListener(int  columna, int fila, JPanel[][] matrizPaneles, int tamaño) {
+	        this.columna = columna;
+	        this.fila = fila;
+	        this.matrizPaneles = matrizPaneles;
+	        this.tamaño = tamaño;
+	    }
 
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            cambiarColorPanel();
-        }
+	    @Override
+	    public void mouseClicked(MouseEvent e) {
+	        cambiarColorPanel();
+	    }
 
-        private void cambiarColorPanel() {
-        	Boolean ocupado=true;
-            for (int i = tamaño - 1; i >= 0; i--) {
-                if (matrizPaneles[columna][i].getBackground().equals(Color.WHITE)) {//Si ve que esta blanco le pide al server que coloque
-                	escribe.turno(columna, i);
-                	ocupado=lee.confirma();
-                	
-                	if(!ocupado) {
-                		matrizPaneles[columna][i].setBackground(Color.RED);// Pedira al server un true o false si le regresa true cambia
-                	}
-                    break;
-                }
-            }
-        }
-    }
-	
+	    private void cambiarColorPanel() {
+	        System.out.println("Pulsa un panel");
+	        for (int i = tamaño - 1; i >= 0; i--) {
+	        	if(matrizPaneles[columna][i]!=null) {
+	        		System.out.println("No es nulo");
+	        		if (matrizPaneles[columna][i].getBackground().equals(Color.WHITE)) {//Si ve que esta blanco le pide al server que coloque
+	        			System.out.println("Y lo coloca columna "+columna+" fila "+i);
+	        			escribe.turno(columna, i);
+		                break;
+	        		}
+	        	}
+	        }
+	    }
+	}
+
 	private JPanel partidasPanel() {
 	    FondoPanel fondo = new FondoPanel("src/main/resources/images/fondo1.jpg");
 	    fondo.setLayout(new BorderLayout());
@@ -845,7 +897,6 @@ public class ClienteScreen {
 	    FondoPanel fondo = new FondoPanel("src/main/resources/images/fondo1.jpg");
 	    fondo.setLayout(new BorderLayout());
 	    
-	    int tamaño = Integer.parseInt(datos[0]);
 	    final int[] index = {0}; // Declaración de index como un array final de un elemento
 //	    Al declarar index como un array, podemos acceder y modificar su valor dentro de las clases internas anónimas, de otras formas da error
 
@@ -855,25 +906,35 @@ public class ClienteScreen {
 	    JButton salir = new JButton("Salir");
 	    salir.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
-	            ventanas.show(cardPanel, "menu");
+	            ventanas.show(cardPanel, "historial");
 	        }
 	    });
 	    menuBar.add(salir);
-
+	    
+	    Component verticalGlue_1 = Box.createVerticalGlue();
+	    menuBar.add(verticalGlue_1);
+	    
 	    JButton btnAtras = new JButton("Atras");
 	    menuBar.add(btnAtras);
 
+	    Component verticalGlue_2 = Box.createVerticalGlue();
+	    menuBar.add(verticalGlue_2);
+	    
 	    JButton btnSiguiente = new JButton("Siguiente");
 	    menuBar.add(btnSiguiente);
 
+	    Component verticalGlue_3 = Box.createVerticalGlue();
+	    menuBar.add(verticalGlue_3);
+	    
 	    JLabel labelResultado;
 	    String[] ultimaJugada = datos[datos.length - 1].split("&");
+	    System.out.println("Ultima jugada: "+ultimaJugada[0]);
 	    if (ultimaJugada[0].equals(this.user)) {
 	        labelResultado = new JLabel("¡Ganaste la partida!");
 	    } else {
 	        labelResultado = new JLabel("Perdiste contra " + ultimaJugada[0]);
 	    }
-	    menuBar.add(labelResultado);
+	    menuBar.add(labelResultado);//si no funciona es esto
 
 	    JPanel contenedor = new JPanel();
 	    fondo.add(contenedor);
@@ -883,21 +944,24 @@ public class ClienteScreen {
 	    contenedor.add(horizontalStrut);
 	//------------------------------------------------Tablero
 	    JPanel tableroPanel = new JPanel();
-	    tableroPanel.setLayout(new GridLayout(tamaño, tamaño)); // Grid horizontal
-	    JPanel[][] matrizPaneles = new JPanel[tamaño][tamaño];
+	    tableroPanel.setLayout(new GridLayout(1, tamaño)); // Grid horizontal
 	    contenedor.add(tableroPanel);
 	//------------------------------------------------
 	    Component horizontalStrut_1 = Box.createHorizontalStrut(22);
 	    contenedor.add(horizontalStrut_1);
 
 	    // Llama a la función inicialmente para mostrar el tablero vacío
-	    updateVisual(tableroPanel, matrizPaneles, tamaño, index[0]);
+	    updateVisual(tableroPanel, index[0], menuBar);
 
 	    btnSiguiente.addActionListener(new ActionListener() {
 	        public void actionPerformed(ActionEvent e) {
 	            if (index[0] < datos.length - 1) {
 	                index[0] += 1;
-	                updateVisual(tableroPanel, matrizPaneles, tamaño, index[0]);
+	                System.out.println("Suma uno al index: "+index[0]);
+	                updateVisual(tableroPanel, index[0], menuBar);
+	            }else {
+	            	System.out.println("Esta igual index: "+index[0]);
+	            	updateVisual(tableroPanel, index[0], menuBar);
 	            }
 	        }
 	    });
@@ -906,7 +970,11 @@ public class ClienteScreen {
 	        public void actionPerformed(ActionEvent e) {
 	            if (index[0] > 0) {
 	                index[0] -= 1;
-	                updateVisual(tableroPanel, matrizPaneles, tamaño, index[0]);
+	                System.out.println("Resta uno al index: "+index[0]);
+	                updateVisual(tableroPanel, index[0], menuBar);
+	            }else {
+	            	System.out.println("Esta igual index: "+index[0]);
+	            	updateVisual(tableroPanel, index[0], menuBar);
 	            }
 	        }
 	    });
@@ -914,48 +982,93 @@ public class ClienteScreen {
 	    return fondo;
 	}
 
-	private void updateVisual(JPanel tablero, JPanel[][] matrizPaneles, int tamaño, int index) {
+	//----------------Aqui actualizar la forma de visualizar a como lo hice anteriormente para colores no hacen falta los listener
+	private void updateVisual(JPanel tablero, int index, JMenuBar menuBar) {
+		// Eliminar el JLabel existente del menuBar si existe
+		Component[] components = menuBar.getComponents();
+		for (Component component : components) {
+		    if (component instanceof JLabel) {
+		        menuBar.remove(component);
+		        break; // Solo necesitamos eliminar uno si hay múltiples JLabels
+		    }
+		}
+		String[] ultimaJugada = datos[datos.length - 1].split("&");
+		ultimaJugada[0] = ultimaJugada[0].replaceAll("null", "");
+	    System.out.println("Ultima jugada: "+ultimaJugada[0]);
+	    JLabel labelResultado;
+	    if (ultimaJugada[0].equals(this.user)) {
+	        labelResultado = new JLabel("¡Ganaste la partida!");
+	    } else {
+	        labelResultado = new JLabel("Perdiste contra " + ultimaJugada[0]);
+	    }
+	    menuBar.add(labelResultado);
 	    // Limpiar el tablero antes de actualizarlo
 	    tablero.removeAll();
-
-	    for (int i = 0; i < tamaño; i++) {
-	        JPanel columna = new JPanel();
-	        columna.setLayout(new GridLayout(tamaño, 1)); // Grid vertical
-	        for (int j = 0; j < tamaño; j++) {
-	            JPanel panel = new JPanel();
-	            panel.setBackground(Color.WHITE); // Panel blanco por defecto
-	            panel.addMouseListener(new PanelClickListener(i, j, matrizPaneles, tamaño));
-	            matrizPaneles[i][j] = panel;
-	            columna.add(panel);
-	        }
-	        tablero.add(columna);
+	    
+	    System.out.println("datos: "+Arrays.toString(datos));
+	    tamaño=Integer.parseInt(datos[0]);
+	    String[] turnos = new String[1];
+	    if(datos.length>1) {
+	    	turnos = new String[datos.length-1];
+	    	 // usuario&columna&fila
+		    for(int i=1;i<datos.length-1;i++) {
+		    	turnos[i-1]=datos[i];
+		    }
+		    turnos[turnos.length-1]=datos[datos.length - 1];
+	    }else {
+	    	turnos[0]="null";
 	    }
-
-	    // Si hay turnos, actualizar el tablero con las jugadas
-	    if (!datos[0].isEmpty()) {
-	        for (int i = 1; i <= index; i++) {
-	            String[] infoJugada = datos[i].split("&");
-	            int columna = Integer.parseInt(infoJugada[1]);
-	            int fila = Integer.parseInt(infoJugada[2]);
-	            String jugador = infoJugada[0];
-
-	            // Actualizar el estado de la casilla en el tablero
-	            JPanel panel = new JPanel();
-	            if (jugador.equals(this.user)) {
-	                panel.setBackground(Color.RED);
-	            } else {
-	                panel.setBackground(Color.YELLOW);
+	    
+	    
+	    
+	    if (turnos.length!=0 && !turnos[0].equals("null")) {
+	    	turnos[0] = turnos[0].replaceAll("null", "");
+	        System.out.println("Turnos: " + Arrays.toString(turnos));
+	        System.out.println("tamaño "+tamaño);
+	        
+	    	for (int i = 0; i < tamaño; i++) {
+	    		JPanel columna = new JPanel();
+	            columna.setLayout(new GridLayout(tamaño, 1)); // Grid vertical
+	            for (int j = 0; j < tamaño; j++) {
+	                JPanel panel = new JPanel();
+	                panel.setBackground(Color.WHITE); // Panel blanco por defecto             
+	                panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+	                for(int t=0;t<index-1;t++) {
+	                	String[] infoJugada = turnos[t].split("&");
+	                    int columnaJugada = Integer.parseInt(infoJugada[1]);
+	                    int filaJugada = Integer.parseInt(infoJugada[2]);
+	                    String jugador = infoJugada[0];
+	                    if (filaJugada == j && columnaJugada == i) {
+	                        if (jugador.equals(this.user)) {
+	                            panel.setBackground(Color.RED);
+	                        } else {
+	                            panel.setBackground(Color.YELLOW);
+	                        }
+	                    }
+	                }
+	                columna.add(panel);
 	            }
-	            panel.addMouseListener(new PanelClickListener(fila, columna, matrizPaneles, tamaño));
-	            matrizPaneles[fila][columna] = panel;
+	            tablero.add(columna);
+	    	}
+	    }else {	    	
+	    	for (int i = 0; i < tamaño; i++) {
+	            JPanel columna = new JPanel();
+	            columna.setLayout(new GridLayout(tamaño, 1)); // Grid vertical
+	            for (int j = 0; j < tamaño; j++) {
+	                JPanel panel = new JPanel();
+	                panel.setBackground(Color.WHITE); // Panel blanco por defecto	               
+	                panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+	                columna.add(panel);
+	            }
+	            tablero.add(columna);
 	        }
 	    }
-
+	    
 	    // Volver a validar y repintar el contenedor
 	    tablero.revalidate();
 	    tablero.repaint();
 	}
-	
 
 	private JPanel configPanel(String intento) {
 		FondoPanel fondo = new FondoPanel("src/main/resources/images/fondo1.jpg");

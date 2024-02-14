@@ -75,10 +75,10 @@ public class Escribir {
 	    }
 	}
 	
-	void isGanador() {
+	void isTerminada() {
 		try {
         	var salida = new DataOutputStream(streamSalida);
-	        String datos="isGanador";
+	        String datos="isTerminada";
 	        salida.writeUTF(datos);
 	        salida.flush();
 	    }catch(Exception ex){
@@ -206,4 +206,5 @@ public class Escribir {
 	        System.err.print(ex.toString());
 	    }
 	}
+
 }
